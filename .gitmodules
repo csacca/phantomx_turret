@@ -1,0 +1,4 @@
+[submodule "arbotix"]
+	path = arbotix
+	url = http://github.com/Interbotix/arbotix.git
+	branch = arduino-1-6
