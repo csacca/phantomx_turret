@@ -1,3 +1,0 @@
-[submodule "arduino/arbotix"]
-	path = arduino/arbotix
-	url = http://github.com/Interbotix/arbotix.git

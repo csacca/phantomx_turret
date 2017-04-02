@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include <stdio.h>
+
 #include <ros.h>
 #include <sensor_msgs/JointState.h>
 
@@ -82,9 +84,10 @@ void cmdCallback(const sensor_msgs::JointState& cmd_msg) {
 
   digitalWrite(0, HIGH-digitalRead(0));
 
-  String pan_Str = String(pan, 3);
+  //String pan_Str = String(pan, 3);
   char buf[256];
-  pan_Str.toCharArray(buf, 256);
+  snprintf(buf, 256, "pan: %04.3f  tilt: %04.3f", pan, tilt);
+  //pan_Str.toCharArray(buf, 256);
 
   nh.loginfo(buf);
 

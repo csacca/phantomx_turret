@@ -165,7 +165,7 @@ rosserial_configure_client(
 )
 
 rosserial_add_client_target(arduino phantomx_turret ALL)
-rosserial_add_client_target(arduino phantomx_turret_upload)
+rosserial_add_client_target(arduino phantomx_turret-upload)
 
 
 #############
