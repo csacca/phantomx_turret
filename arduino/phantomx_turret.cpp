@@ -215,43 +215,21 @@ void cmdCallback(const sensor_msgs::JointState& cmd_msg) {
   snprintf(buf, 128, "name[1]: %s", cmd_msg.name[1]);
   nh.loginfo(buf);
 
-  //snprintf(buf, 256, "position_length: %d", cmd_msg.position_length);
-  //nh.loginfo(buf);
+  char pan_pos_str[16];
+  char tilt_pos_str[16];
+  char pan_vel_str[16];
+  char tilt_vel_str[16];
+  char pan_eff_str[16];
+  char tilt_eff_str[16];
+  dtostrf(pan_pos, 4, 3, pan_pos_str);
+  dtostrf(tilt_pos, 4, 3, tilt_pos_str);
+  dtostrf(pan_vel, 4, 3, pan_vel_str);
+  dtostrf(tilt_vel, 4, 3, tilt_vel_str);
+  dtostrf(pan_eff, 4, 3, pan_eff_str);
+  dtostrf(tilt_eff, 4, 3, tilt_eff_str);
 
-  //snprintf(buf, 256, "st_position: %f", cmd_msg.st_position);
-  //nh.loginfo(buf);
 
-  //snprintf(buf, 256, "position[0]: %f", cmd_msg.position[0]);
-  //nh.loginfo(buf);
-
-  //snprintf(buf, 256, "position[1]: %f", cmd_msg.position[1]);
-  //nh.loginfo(buf);
-
-  //snprintf(buf, 256, "velocity_length: %d", cmd_msg.velocity_length);
-  //nh.loginfo(buf);
-
-  //snprintf(buf, 256, "st_velocity: %f", cmd_msg.st_velocity);
-  //nh.loginfo(buf);
-
-  //snprintf(buf, 256, "velocity[0]: %f", cmd_msg.velocity[0]);
-  //nh.loginfo(buf);
-
-  //snprintf(buf, 256, "velocity[1]: %f", cmd_msg.velocity[1]);
-  //nh.loginfo(buf);
-
-  //snprintf(buf, 256, "effort_length: %d", cmd_msg.effort_length);
-  //nh.loginfo(buf);
-
-  //snprintf(buf, 256, "st_effort: %f", cmd_msg.st_effort);
-  //nh.loginfo(buf);
-
-  //snprintf(buf, 256, "effort[0]: %f", cmd_msg.effort[0]);
-  //nh.loginfo(buf);
-
-  //snprintf(buf, 256, "effort[1]: %f", cmd_msg.effort[1]);
-  //nh.loginfo(buf);
-
-  snprintf(buf, 128, "[cmdCallback]:\n  p0: %2.3f  p1: %2.3f\n  v0: %2.3f  v1:%2.3f\n  e0: %2.3f  e1: %2.3f\n", pan_pos, tilt_pos, pan_vel, tilt_vel, pan_eff, tilt_eff);
+  snprintf(buf, 128, "[cmdCallback]:\n  p0: %s  p1: %s\n  v0: %s  v1: %s\n  e0: %s  e1: %s\n", pan_pos_str, tilt_pos_str, pan_vel_str, tilt_vel_str, pan_eff_str, tilt_eff_str);
   nh.loginfo(buf);
 
 //  snprintf(buf, 256, "Cmd Position - pan: %x  tilt: %x", pan_pos, tilt_pos);
