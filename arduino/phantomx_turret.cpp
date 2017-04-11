@@ -290,6 +290,8 @@ void setup() {
 
   dxlInit(1000000);
 
+  ArduinoHardware* nh_hw = nh.getHardware();
+  nh_hw->setBaud(1000000);
   nh.initNode();
   nh.advertise(pub_state);
   nh.subscribe(sub_cmd);
