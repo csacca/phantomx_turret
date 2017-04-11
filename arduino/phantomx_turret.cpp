@@ -198,13 +198,73 @@ void cmdCallback(const sensor_msgs::JointState& cmd_msg) {
   float pan_eff = cmd_msg.effort[0];
   float tilt_eff = cmd_msg.effort[1];
 
-  digitalWrite(0, HIGH-digitalRead(0));
+  //digitalWrite(0, HIGH-digitalRead(0));
 
-  char buf[256];
-  snprintf(buf, 256, "Recieved command - pan pos: %04.3f  tilt pos: %04.3f", pan_pos, tilt_pos);
+
+  char buf[128];
+
+  //snprintf(buf, 256, "name_length: %d", cmd_msg.name_length);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "st_name: %s", cmd_msg.st_name);
+  //nh.loginfo(buf);
+
+  snprintf(buf, 128, "name[0]: %s", cmd_msg.name[0]);
   nh.loginfo(buf);
 
+  snprintf(buf, 128, "name[1]: %s", cmd_msg.name[1]);
+  nh.loginfo(buf);
+
+  //snprintf(buf, 256, "position_length: %d", cmd_msg.position_length);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "st_position: %f", cmd_msg.st_position);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "position[0]: %f", cmd_msg.position[0]);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "position[1]: %f", cmd_msg.position[1]);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "velocity_length: %d", cmd_msg.velocity_length);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "st_velocity: %f", cmd_msg.st_velocity);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "velocity[0]: %f", cmd_msg.velocity[0]);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "velocity[1]: %f", cmd_msg.velocity[1]);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "effort_length: %d", cmd_msg.effort_length);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "st_effort: %f", cmd_msg.st_effort);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "effort[0]: %f", cmd_msg.effort[0]);
+  //nh.loginfo(buf);
+
+  //snprintf(buf, 256, "effort[1]: %f", cmd_msg.effort[1]);
+  //nh.loginfo(buf);
+
+  snprintf(buf, 128, "[cmdCallback]:\n  p0: %2.3f  p1: %2.3f\n  v0: %2.3f  v1:%2.3f\n  e0: %2.3f  e1: %2.3f\n", pan_pos, tilt_pos, pan_vel, tilt_vel, pan_eff, tilt_eff);
+  nh.loginfo(buf);
+
+//  snprintf(buf, 256, "Cmd Position - pan: %x  tilt: %x", pan_pos, tilt_pos);
+//  nh.loginfo(buf);
+
+//  snprintf(buf, 256, "Cmd Speed - pan: %f  tilt: %f", pan_vel, tilt_vel);
+//  nh.loginfo(buf);
+
+//  snprintf(buf, 256, "Cmd Torque - pan: %f  tilt: %f", pan_eff, tilt_eff);
+//  nh.loginfo(buf);
+
   setPanTilt(pan_pos, tilt_pos, pan_vel, tilt_vel, pan_eff, tilt_eff);
+
 }
 
 ros::Subscriber<sensor_msgs::JointState> sub_cmd("cmd", &cmdCallback);
