@@ -1,2 +1,46 @@
 <?xml version="1.0"?>
 
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:property name="M_PI" value="3.14159"/>
+  <xacro:property name="M_SCALE" value="0.001"/>
+
+  <xacro:macro name="base_mount" params="parent name color *origin">
+    <joint name="${name}_joint" type="fixed">
+      <insert_block name="origin"/>
+        <parent link="${parent}"/>
+        <child link="${name}_link"/>
+    </joint>
+
+    <link name="${name}_link">
+      <inertial>
+        <mass value="0.21328"/>
+        <origin xyz="0.00199427 0.0257168 0.00107065"/>
+        <inertia ixx="0.0003798" ixy="-6.70148E-7" ixz="-5.778745E-6"
+                 iyy="0.0006116" iyz="-8.17711E-7"
+                 izz="0.000379"/>
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://phantomx_turret/meshes/base.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0 0 0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="${name}_link">
+      <material>Gazebo/${color}</material>
+      <selfCollide>true</selfCollide>
+      <gravity>true</gravity>
+    </gazebo>
+  </xacro:macro>
+
+</robot>
