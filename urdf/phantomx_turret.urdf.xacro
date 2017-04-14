@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="phantomx_turret" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:include filename="$(find phantomx_turret)/urdf/pan_tilt_hardware.xacro"/>
 
   <material name="White">
