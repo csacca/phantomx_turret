@@ -37,7 +37,7 @@
   <interbotix_F3_bracket_revolute parent="pan_servo_link" name="pan_F3" color="Gray"
                                   elimit="${ax12_elimit}" vlimit="${ax12_vlimit}" 
                                   llimit="${ax12_llimit}" ulimit="${ax12_ulimit}">
-    <origin xyz="-2e-6 0.09724 -9e-6" rpy="0 0 0"/>
+    <origin xyz="0 0 0.02094" rpy="0 0 ${M_PI/2}"/>
   </interbotix_F3_bracket_revolute>
 
 </robot>
