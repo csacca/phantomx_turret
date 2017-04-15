@@ -47,7 +47,7 @@
   </AX12A_compound_fixed>
 
   <interbotix_F2_bracket_fixed parent="tilt_servo_link" name="pan_F2" color="Gray">
-    <origin xyz="0.005 0.0265 0.024527" rpy="0 0 0"/>
+    <origin xyz="-0.005 0.0265 0.024527" rpy="0 0 0"/>
   </interbotix_F2_bracket_fixed>
 
 </robot>

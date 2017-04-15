@@ -234,7 +234,7 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="${M_PI/2} ${M_PI} 0"/>
         <geometry>
           <mesh filename="package://phantomx_turret/meshes/F2-Bracket.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
         </geometry>
