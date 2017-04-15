@@ -26,4 +26,8 @@
     <origin xyz="-2e-6 0.0763 -9e-6" rpy="${-M_PI/2} 0 0"/>
   </AX12A_fixed>
 
+  <interbotix_F3_bracket_revolute parent="pan_servo_link" name="pan_F3">
+    <origin xyz="-2e-6 0.09724 -9e-6" rpy="0 0 0"/>
+  </interbotix_F3_bracket_revolute>
+
 </robot>
