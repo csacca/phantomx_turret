@@ -217,4 +217,44 @@
 
   </xacro:macro>
 
+  <xacro:macro name="interbotix_F2_bracket_fixed" params="parent name color *origin">
+    <joint name="${name}_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+    </joint>
+
+    <link name="${name}_link">
+      <inertial>
+        <mass value="0.011446"/>
+        <origin xyz="-0.00500002 0.0225873 0.00932534"/>
+        <inertia ixx="4.9483e-06" ixy="0" ixz="8.3000e-11"
+                 iyy="2.2081e-06" iyz="0"
+                 izz="4.4637e-06"/>
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://phantomx_turret/meshes/F3-Bracket.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0 0 0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="${name}_link">
+      <material>Gazebo/${color}</material>
+      <selfCollide>true</selfCollide>
+      <gravity>true</gravity>
+    </gazebo>
+
+  </xacro:macro>
+
 </robot>
