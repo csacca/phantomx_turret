@@ -46,7 +46,7 @@
     <origin xyz="0 0 0.0415" rpy="${M_PI/2} 0 ${M_PI/2}"/>
   </AX12A_compound_fixed>
 
-  <interbotix_F2_bracket_fixed parent="pan_servo_link" name="pan_F3" color="Gray">
+  <interbotix_F2_bracket_fixed parent="tilt_servo_link" name="pan_F2" color="Gray">
     <origin xyz="0.005 0.0265 0.024527" rpy="0 0 0"/>
   </interbotix_F2_bracket_fixed>
 
