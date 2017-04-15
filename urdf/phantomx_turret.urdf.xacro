@@ -41,8 +41,8 @@
   </interbotix_F3_bracket_revolute>
 
   <!-- AX-12A Pan !-->
-  <AX12A_fixed parent="interbotix_F3_bracket_revolute_link" name="tilt_servo">
-    <origin xyz="0 0 0.0415" rpy="0 0 0"/>
+  <AX12A_fixed parent="pan_F3_link" name="tilt_servo">
+    <origin xyz="0 0 0.0415" rpy="${M_PI/2} 0 0"/>
   </AX12A_fixed>
 
 </robot>
