@@ -23,7 +23,7 @@
 
   <!-- AX-12A Pan !-->
   <AX12A_fixed parent="base_mount_link" name="pan_servo">
-    <origin xyz="-2e-6 0.0763 -9e-6" rpy="$-{M_PI/2} 0 0"/>
+    <origin xyz="-2e-6 0.0763 -9e-6" rpy="${-M_PI/2} 0 0"/>
   </AX12A_fixed>
 
 </robot>
