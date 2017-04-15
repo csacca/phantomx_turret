@@ -43,4 +43,71 @@
     </gazebo>
   </xacro:macro>
 
+  <xacro:macro name="AX12A_fixed" params="parent name *origin">
+    <joint name="${name}_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+    </joint>
+
+    <link name="${name}_link">
+      <inertial>
+        <mass value="0.0546"/>
+        <origin xyz="-3.09266e-5 0.0774271 0.0125938"/>
+        <inertia ixx="0.0003798" ixy="-6.70148E-7" ixz="-5.778745E-6"
+                 iyy="0.0006116" iyz="-8.17711E-7"
+                 izz="0.000379"/>
+      </inertial>
+
+
+ASM0002_ASM
+Area  1.389E+04 mm^2
+Density 0.001 g / mm^3
+Mass  47.854 g
+Volume  4.279E+04 mm^3
+Physical Material (Various)
+
+Bounding Box
+Length   32.00 mm
+Width    40.047 mm
+Height   50.00 mm
+World X,Y,Z 0 mm, 110 mm, -1.74305e-13 mm
+Center of Mass  -0.0309266 mm, 77.4271 mm, 12.5938 mm
+
+Moment of Inertia at Center of Mass   (g mm^2)
+  Ixx = 1.439E+04
+  Ixy = 1.541
+  Ixz = 11.563
+  Iyx = 1.541
+  Iyy = 1.219E+04
+  Iyz = 216.221
+  Izx = 11.563
+  Izy = 216.221
+  Izz = 7768.456
+
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://phantomx_turret/meshes/AX-12A.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+        </geometry>
+        <material name="Black"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0 0 0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="${name}_link">
+      <material>Gazebo/Black</material>
+      <selfCollide>true</selfCollide>
+      <gravity>true</gravity>
+    </gazebo>
+
+  </xacro:macro>
+
 </robot>
