@@ -96,7 +96,7 @@
     </gazebo>
   </xacro:macro>
 
-  <xacro:macro name="AX12A_compound_fixed" params="parent name *origin">
+  <xacro:macro name="AX12A_compound_fixed" params="parent name llimit ulimit vlimit elimit *origin">
     <joint name="${name}_body_joint" type="fixed">
       <xacro:insert_block name="origin"/>
       <parent link="${parent}"/>
@@ -138,6 +138,8 @@
     <joint name="${name}_horn_joint" type="revolute">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
+      <limit effort="${elimit}" velocity="${vlimit}" lower="${llimit}" upper="${ulimit}"/>
+      <dynamics friction="0.13"/>
       <parent link="${name}_body_link"/>
       <child link="${name}_link"/>
     </joint>
