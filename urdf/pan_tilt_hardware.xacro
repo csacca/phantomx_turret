@@ -60,13 +60,6 @@
       </inertial>
 
 
-ASM0002_ASM
-Area  1.389E+04 mm^2
-Density 0.001 g / mm^3
-Mass  47.854 g
-Volume  4.279E+04 mm^3
-Physical Material (Various)
-
 Bounding Box
 Length   32.00 mm
 Width    40.047 mm
@@ -87,7 +80,7 @@ Moment of Inertia at Center of Mass   (g mm^2)
 
 
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0"/>
         <geometry>
           <mesh filename="package://phantomx_turret/meshes/AX-12A.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
         </geometry>
@@ -97,7 +90,7 @@ Moment of Inertia at Center of Mass   (g mm^2)
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <box size="0 0 0"/>
+          <box size="0.032 0.040047 0.05"/>
         </geometry>
       </collision>
     </link>
