@@ -2,6 +2,14 @@
 <robot name="phantomx_turret" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:include filename="$(find phantomx_turret)/urdf/pan_tilt_hardware.xacro"/>
 
+  <!-- angle limits in rad ~ +/- 150 deg !-->
+  <xacro:property name="ax12_llimit" value="${-(5.0/6.0)*M_PI}"/>
+  <xacro:property name="ax12_ulimit" value="${(5.0/6.0)*M_PI}"/>
+  <!-- vlimit in rad/s ~(0.111rpm * 1023) !-->
+  <xacro:property name="ax12_vlimit" value="11.891242339515"/>
+  <!-- elimit in N m !-->
+  <xacro:property name="ax12_elimit" value="1.5"/>
+
   <material name="White">
     <color rgba="0.87 0.90 0.87 1.0"/>
   </material>
@@ -26,7 +34,9 @@
     <origin xyz="-2e-6 0.0763 -9e-6" rpy="${-M_PI/2} 0 0"/>
   </AX12A_fixed>
 
-  <interbotix_F3_bracket_revolute parent="pan_servo_link" name="pan_F3">
+  <interbotix_F3_bracket_revolute parent="pan_servo_link" name="pan_F3" color="Gray"
+                                  elimit="${ax12_elimit}" vlimit="${ax12_vlimit}" 
+                                  llimit="${ax12_llimit}" ulimit="${ax12_ulimit}">
     <origin xyz="-2e-6 0.09724 -9e-6" rpy="0 0 0"/>
   </interbotix_F3_bracket_revolute>
 
