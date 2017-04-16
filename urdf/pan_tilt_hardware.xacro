@@ -257,4 +257,44 @@
 
   </xacro:macro>
 
+  <xacro:macro name="camera_mount_fixed" params="parent name color *origin">
+    <joint name="${name}_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+    </joint>
+
+    <link name="${name}_link">
+      <inertial>
+        <mass value="0.006453"/>
+        <origin xyz="3.09425e-6 0.00873896 -0.00980897"/>
+        <inertia ixx="1.3618e-06" ixy="1.4400e-10" ixz="8.2000e-11"
+                 iyy="1.4384e-06" iyz="3.8945e-07"
+                 izz="1.5063e-06"/>
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://phantomx_turret/meshes/Head.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0 0 0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="${name}_link">
+      <material>Gazebo/${color}</material>
+      <selfCollide>true</selfCollide>
+      <gravity>true</gravity>
+    </gazebo>
+
+  </xacro:macro>
+
 </robot>

@@ -50,4 +50,8 @@
     <origin xyz="-3.601e-7 0.017175 -0.002002" rpy="0 0 0"/>
   </interbotix_F2_bracket_fixed>
 
+  <camera_mount_fixed parent="pan_F2_link" name="camera_mount" color="Gray">
+    <origin xyz="-3.788e-9 0.009325 4e-8" rpy="0 0 0"/>
+  </camera_mount_fixed>
+
 </robot>
