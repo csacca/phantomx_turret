@@ -1,6 +1,6 @@
 <launch>
   <param name="robot_description"
-    command="$(find xacro)/xacro --inorder '$(find phantomx_turret)/urdf/phantomx_turret.xacro'" />
+    command="$(find xacro)/xacro --inorder '$(find phantomx_turret)/urdf/phantomx_turret.urdf.xacro'" />
 
   <!-- send fake joint values -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
