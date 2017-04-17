@@ -336,12 +336,12 @@
     </gazebo>
 
     <joint name="${name}_lens_joint" type="fixed">
-      <origin xyz="-0.009462 -0.0125 0.00615" rpy="0 0 0"/>
+      <origin xyz="0.00615 0.009462 0.0125" rpy="0 0 0"/>
       <parent link="${name}_link"/>
       <child link="${name}_lens_link"/>
     </joint>
 
-    <link name="${name}_link">
+    <link name="${name}_lens_link">
       <inertial>
         <mass value="0.0001"/>
         <origin xyz="0 0 0"/>
@@ -351,7 +351,7 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 ${M_PI/2} 0"/>
         <geometry>
           <cylinder radius="0.0005" length="0.0005"/>
         </geometry>
