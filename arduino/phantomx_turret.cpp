@@ -8,6 +8,8 @@
 
 #include <ax12.h>
 
+char pan_name[] = "pan_servo_horn_joint";
+char tilt_name[] = "tilt_servo_horn_joint";
 
 #define PAN_ID  1
 #define TILT_ID 2
@@ -30,21 +32,21 @@
 #define TILT_EFF_MIN  0
 #define TILT_EFF_MAX  1023
 
-
 #define DEFAULT_VEL  0
-#define DEFAULT_EFF  1023
+#define DEFAULT_EFF  1.5
 
 ros::NodeHandle nh;
 
 float pos_to_rad(int pos) {
   float step = 0.00511326929; // (300 degs / 1024 steps) to rad
-  float rad = (float) pos * step;
+  float rad = (float) (pos - 512) * step;
   return rad;
 }
 
 int rad_to_pos(float rad) {
   float step = 1.0/0.00511326929;
-  int pos = round(rad*step);
+  // offset by 150 degs (512 steps)
+  int pos = round((rad+2.61799387648)*step);
   return pos;
 }
 
@@ -101,18 +103,9 @@ float eff_to_Nm(int eff) {
 int Nm_to_eff(float force) {
   float step = 1.0/0.00146484375;
 
-  int dir_mask = 0x400;
-  int val_mask = 0x3FF;
-
   int eff = abs(round(force*step));
-  eff = eff & val_mask;
-
-//  if (force >= 0) {
-//    eff = eff | dir_mask;
-//  }
-
+  eff = max(min(eff, 1023), 0);
   return eff;
-
 }
 
 void setRawPanTiltPos(int pan, int tilt) {
@@ -139,12 +132,19 @@ void setPanTiltPos(float pan_rad, float tilt_rad) {
 }
 
 void setRawPanTilt(int pan_pos, int tilt_pos, int pan_vel, int tilt_vel, int pan_eff, int tilt_eff) {
+  if (dxlPing(PAN_ID) == 1) {
+    nh.loginfo("Pinged pan servo");
+  }
+  if (dxlPing(TILT_ID) == 1) {
+    nh.loginfo("Pinged tilt servo");
+  }
+
   pan_pos = max(min(pan_pos, PAN_POS_MAX), PAN_POS_MIN);
   tilt_pos = max(min(tilt_pos, TILT_POS_MAX), TILT_POS_MIN);
   pan_vel = max(min(pan_vel, PAN_VEL_MAX), PAN_VEL_MIN);
   tilt_vel = max(min(tilt_vel, TILT_VEL_MAX), TILT_VEL_MIN);
-  pan_eff = max(min(pan_eff, PAN_VEL_MAX), PAN_VEL_MIN);
-  tilt_eff = max(min(tilt_eff, TILT_VEL_MAX), TILT_VEL_MIN);
+  pan_eff = max(min(pan_eff, PAN_EFF_MAX), PAN_EFF_MIN);
+  tilt_eff = max(min(tilt_eff, TILT_EFF_MAX), TILT_EFF_MIN);
 
   int pos_data[3][2] = {{PAN_ID, pan_pos},
                         {TILT_ID, tilt_pos},
@@ -161,7 +161,6 @@ void setRawPanTilt(int pan_pos, int tilt_pos, int pan_vel, int tilt_vel, int pan
   dxlSyncWrite(pos_data, 2, AX_GOAL_POSITION_L,2);
   dxlSyncWrite(vel_data, 2, AX_GOAL_SPEED_L,2);
   dxlSyncWrite(eff_data, 2, AX_TORQUE_LIMIT_L,2);
-
 
   char buf[256];
   snprintf(buf, 256, "Set Position - pan: %d  tilt: %d", pan_pos, tilt_pos);
@@ -187,33 +186,61 @@ void setPanTilt(float pan_pos_rad, float tilt_pos_rad, float pan_vel_rad, float 
 }
 
 void cmdCallback(const sensor_msgs::JointState& cmd_msg) {
-  nh.loginfo("PTU command callback");
-  //FIXME: verify num of elems of msg
-  //FIXME: verify names 'pan', 'tilt'
+//  nh.loginfo("PTU command callback");
 
-  float pan_pos = cmd_msg.position[0];
-  float tilt_pos = cmd_msg.position[1];
-  float pan_vel = cmd_msg.velocity[0];
-  float tilt_vel = cmd_msg.velocity[1];
-  float pan_eff = cmd_msg.effort[0];
-  float tilt_eff = cmd_msg.effort[1];
+  int pan_idx = -1;
+  int tilt_idx = -1;
 
-  //digitalWrite(0, HIGH-digitalRead(0));
+  float pan_pos = 0;
+  float tilt_pos = 0;
+  float pan_vel = DEFAULT_VEL;
+  float tilt_vel = DEFAULT_VEL;
+  float pan_eff = DEFAULT_EFF;
+  float tilt_eff = DEFAULT_EFF;
+
+  for (int i = 0; i < cmd_msg.name_length; i++) {
+    if (strncmp(cmd_msg.name[i], pan_name, strlen(pan_name)) == 0) {
+      pan_idx = i;
+    } else if (strncmp(cmd_msg.name[i], tilt_name, strlen(tilt_name)) == 0) {
+      tilt_idx = i;
+    }
+  }
+
+  if ( (pan_idx != -1) && (tilt_idx != -1) ) {
+
+    if ( cmd_msg.position_length >= 2 ) {
+      pan_pos = cmd_msg.position[pan_idx];
+      tilt_pos = cmd_msg.position[tilt_idx];
+    } else {
+      pan_pos = 0;
+      tilt_pos = 0;
+    }
+
+    if ( cmd_msg.velocity_length >= 2 ) {
+      pan_vel = cmd_msg.velocity[pan_idx];
+      tilt_vel = cmd_msg.velocity[tilt_idx];
+    } else {
+      pan_vel = DEFAULT_VEL;
+      tilt_vel = DEFAULT_VEL;
+    }
+
+    if ( cmd_msg.effort_length >= 2 ) {
+      pan_eff = cmd_msg.effort[pan_idx];
+      tilt_eff = cmd_msg.effort[tilt_idx];
+    } else {
+      pan_eff = DEFAULT_EFF;
+      tilt_eff = DEFAULT_EFF;
+    }
+
+  }
 
 
   char buf[128];
 
-  //snprintf(buf, 256, "name_length: %d", cmd_msg.name_length);
-  //nh.loginfo(buf);
-
-  //snprintf(buf, 256, "st_name: %s", cmd_msg.st_name);
-  //nh.loginfo(buf);
-
-  snprintf(buf, 128, "name[0]: %s", cmd_msg.name[0]);
-  nh.loginfo(buf);
-
-  snprintf(buf, 128, "name[1]: %s", cmd_msg.name[1]);
-  nh.loginfo(buf);
+  for (int i = 0; i < cmd_msg.name_length; i++) {
+    snprintf(buf, 128, "name[%d]: %s", i, cmd_msg.name[i]);
+    nh.loginfo(buf);
+  }
 
   char pan_pos_str[16];
   char tilt_pos_str[16];
@@ -232,20 +259,10 @@ void cmdCallback(const sensor_msgs::JointState& cmd_msg) {
   snprintf(buf, 128, "[cmdCallback]:\n  p0: %s  p1: %s\n  v0: %s  v1: %s\n  e0: %s  e1: %s\n", pan_pos_str, tilt_pos_str, pan_vel_str, tilt_vel_str, pan_eff_str, tilt_eff_str);
   nh.loginfo(buf);
 
-//  snprintf(buf, 256, "Cmd Position - pan: %x  tilt: %x", pan_pos, tilt_pos);
-//  nh.loginfo(buf);
-
-//  snprintf(buf, 256, "Cmd Speed - pan: %f  tilt: %f", pan_vel, tilt_vel);
-//  nh.loginfo(buf);
-
-//  snprintf(buf, 256, "Cmd Torque - pan: %f  tilt: %f", pan_eff, tilt_eff);
-//  nh.loginfo(buf);
-
   setPanTilt(pan_pos, tilt_pos, pan_vel, tilt_vel, pan_eff, tilt_eff);
-
 }
 
-ros::Subscriber<sensor_msgs::JointState> sub_cmd("cmd", &cmdCallback);
+ros::Subscriber<sensor_msgs::JointState> sub_cmd("joint_states", &cmdCallback);
 
 sensor_msgs::JointState js_msg;
 ros::Publisher pub_state("state", &js_msg);
@@ -261,9 +278,7 @@ void publishCurrentState() {
   int pan_torque = dxlGetTorque(PAN_ID);
   int tilt_torque = dxlGetTorque(TILT_ID);
 
-  char pan_str[] = "pan";
-  char tilt_str[] = "tilt";
-  char* name[] = {pan_str, tilt_str};
+  char* name[] = {pan_name, tilt_name};
 
   float pos[] = {pos_to_rad(pan_pos), pos_to_rad(tilt_pos)};
 

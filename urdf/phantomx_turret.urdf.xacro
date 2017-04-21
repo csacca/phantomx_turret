@@ -23,11 +23,10 @@
     <color rgba="0.22 0.32 0.14 1.0"/>
   </material>
 
-  <!-- Used for fixing robot to Gazebo 'base_link' -->
 
-  <link name="world"/>
+  <link name="base_link"/>
 
-  <base_mount parent="world" name="base_mount" color="Gray" >
+  <base_mount parent="base_link" name="base_mount" color="Gray" >
       <origin xyz="0 0 0" rpy="0 0 0"/>
   </base_mount>
 
