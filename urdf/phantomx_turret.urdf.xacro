@@ -23,6 +23,13 @@
     <color rgba="0.22 0.32 0.14 1.0"/>
   </material>
 
+  <!-- ros_control plugin -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/phantomx_turret</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+  </gazebo>
 
   <link name="base_link"/>
 
