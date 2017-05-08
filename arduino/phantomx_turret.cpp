@@ -8,8 +8,6 @@
 
 #include <ax12.h>
 
-char pan_name[] = "pan_servo_horn_joint";
-char tilt_name[] = "tilt_servo_horn_joint";
 
 #define PAN_ID  1
 #define TILT_ID 2
@@ -35,7 +33,19 @@ char tilt_name[] = "tilt_servo_horn_joint";
 #define DEFAULT_VEL  0
 #define DEFAULT_EFF  1.5
 
+char pan_name[] = "pan_servo_horn_joint";
+char tilt_name[] = "tilt_servo_horn_joint";
+
+int DEBUG = 0;
+
 ros::NodeHandle nh;
+
+
+/*
+ *
+ * Conversion Functions
+ *
+ */
 
 float pos_to_rad(int pos) {
   float step = 0.00511326929; // (300 degs / 1024 steps) to rad
@@ -108,6 +118,13 @@ int Nm_to_eff(float force) {
   return eff;
 }
 
+
+/*
+ *
+ * Position Setting Functions
+ *
+ */
+
 void setRawPanTiltPos(int pan, int tilt) {
   pan = max(min(pan, PAN_POS_MAX), PAN_POS_MIN);
   tilt = max(min(tilt, TILT_POS_MAX), TILT_POS_MIN);
@@ -118,10 +135,11 @@ void setRawPanTiltPos(int pan, int tilt) {
 
   dxlSyncWritePosition(PTData, 2);
 
-  char buf[256];
-  snprintf(buf, 256, "Set Position - pan: %d  tilt: %d", pan, tilt);
-  nh.loginfo(buf);
-
+  if (DEBUG != 0) {
+    char buf[256];
+    snprintf(buf, 256, "Set Position - pan: %d  tilt: %d", pan, tilt);
+    nh.loginfo(buf);
+  }
 }
 
 void setPanTiltPos(float pan_rad, float tilt_rad) {
@@ -132,13 +150,16 @@ void setPanTiltPos(float pan_rad, float tilt_rad) {
 }
 
 void setRawPanTilt(int pan_pos, int tilt_pos, int pan_vel, int tilt_vel, int pan_eff, int tilt_eff) {
-  if (dxlPing(PAN_ID) == 1) {
-    nh.loginfo("Pinged pan servo");
-  }
-  if (dxlPing(TILT_ID) == 1) {
-    nh.loginfo("Pinged tilt servo");
+  if (DEBUG != 0) {
+    if (dxlPing(PAN_ID) == 1) {
+      nh.loginfo("Pinged pan servo");
+    }
+    if (dxlPing(TILT_ID) == 1) {
+      nh.loginfo("Pinged tilt servo");
+    }
   }
 
+  // clip values within max and min
   pan_pos = max(min(pan_pos, PAN_POS_MAX), PAN_POS_MIN);
   tilt_pos = max(min(tilt_pos, TILT_POS_MAX), TILT_POS_MIN);
   pan_vel = max(min(pan_vel, PAN_VEL_MAX), PAN_VEL_MIN);
@@ -162,16 +183,17 @@ void setRawPanTilt(int pan_pos, int tilt_pos, int pan_vel, int tilt_vel, int pan
   dxlSyncWrite(vel_data, 2, AX_GOAL_SPEED_L,2);
   dxlSyncWrite(eff_data, 2, AX_TORQUE_LIMIT_L,2);
 
-  char buf[256];
-  snprintf(buf, 256, "Set Position - pan: %d  tilt: %d", pan_pos, tilt_pos);
-  nh.loginfo(buf);
+  if (DEBUG != 0) {
+    char buf[256];
+    snprintf(buf, 256, "Set Position - pan: %d  tilt: %d", pan_pos, tilt_pos);
+    nh.loginfo(buf);
 
-  snprintf(buf, 256, "Set Speed - pan: %d  tilt: %d", pan_vel, tilt_vel);
-  nh.loginfo(buf);
+    snprintf(buf, 256, "Set Speed - pan: %d  tilt: %d", pan_vel, tilt_vel);
+    nh.loginfo(buf);
 
-  snprintf(buf, 256, "Set Torque - pan: %d  tilt: %d", pan_eff, tilt_eff);
-  nh.loginfo(buf);
-
+    snprintf(buf, 256, "Set Torque - pan: %d  tilt: %d", pan_eff, tilt_eff);
+    nh.loginfo(buf);
+  }
 }
 
 void setPanTilt(float pan_pos_rad, float tilt_pos_rad, float pan_vel_rad, float tilt_vel_rad, float pan_eff_Nm, float tilt_eff_Nm) {
@@ -184,6 +206,13 @@ void setPanTilt(float pan_pos_rad, float tilt_pos_rad, float pan_vel_rad, float 
 
   setRawPanTilt(pan_pos, tilt_pos, pan_vel, tilt_vel, pan_eff, tilt_eff);
 }
+
+
+/*
+ *
+ * Call Backs
+ *
+ */
 
 void cmdCallback(const sensor_msgs::JointState& cmd_msg) {
 //  nh.loginfo("PTU command callback");
@@ -198,6 +227,7 @@ void cmdCallback(const sensor_msgs::JointState& cmd_msg) {
   float pan_eff = DEFAULT_EFF;
   float tilt_eff = DEFAULT_EFF;
 
+  // check JointState name fields
   for (int i = 0; i < cmd_msg.name_length; i++) {
     if (strncmp(cmd_msg.name[i], pan_name, strlen(pan_name)) == 0) {
       pan_idx = i;
@@ -234,33 +264,37 @@ void cmdCallback(const sensor_msgs::JointState& cmd_msg) {
 
   }
 
+  if (DEBUG != 0) {
+    char buf[128];
 
-  char buf[128];
+    for (int i = 0; i < cmd_msg.name_length; i++) {
+      snprintf(buf, 128, "name[%d]: %s", i, cmd_msg.name[i]);
+      nh.loginfo(buf);
+    }
 
-  for (int i = 0; i < cmd_msg.name_length; i++) {
-    snprintf(buf, 128, "name[%d]: %s", i, cmd_msg.name[i]);
+    char pan_pos_str[16];
+    char tilt_pos_str[16];
+    char pan_vel_str[16];
+    char tilt_vel_str[16];
+    char pan_eff_str[16];
+    char tilt_eff_str[16];
+    dtostrf(pan_pos, 4, 3, pan_pos_str);
+    dtostrf(tilt_pos, 4, 3, tilt_pos_str);
+    dtostrf(pan_vel, 4, 3, pan_vel_str);
+    dtostrf(tilt_vel, 4, 3, tilt_vel_str);
+    dtostrf(pan_eff, 4, 3, pan_eff_str);
+    dtostrf(tilt_eff, 4, 3, tilt_eff_str);
+
+
+    snprintf(buf, 128, "[cmdCallback]:\n  p0: %s  p1: %s\n  v0: %s  v1: %s\n  e0: %s  e1: %s\n", pan_pos_str, tilt_pos_str, pan_vel_str, tilt_vel_str, pan_eff_str, tilt_eff_str);
     nh.loginfo(buf);
   }
 
-  char pan_pos_str[16];
-  char tilt_pos_str[16];
-  char pan_vel_str[16];
-  char tilt_vel_str[16];
-  char pan_eff_str[16];
-  char tilt_eff_str[16];
-  dtostrf(pan_pos, 4, 3, pan_pos_str);
-  dtostrf(tilt_pos, 4, 3, tilt_pos_str);
-  dtostrf(pan_vel, 4, 3, pan_vel_str);
-  dtostrf(tilt_vel, 4, 3, tilt_vel_str);
-  dtostrf(pan_eff, 4, 3, pan_eff_str);
-  dtostrf(tilt_eff, 4, 3, tilt_eff_str);
-
-
-  snprintf(buf, 128, "[cmdCallback]:\n  p0: %s  p1: %s\n  v0: %s  v1: %s\n  e0: %s  e1: %s\n", pan_pos_str, tilt_pos_str, pan_vel_str, tilt_vel_str, pan_eff_str, tilt_eff_str);
-  nh.loginfo(buf);
-
   setPanTilt(pan_pos, tilt_pos, pan_vel, tilt_vel, pan_eff, tilt_eff);
+  
 }
+
+
 
 ros::Subscriber<sensor_msgs::JointState> sub_cmd("joint_states", &cmdCallback);
 
@@ -299,18 +333,45 @@ void publishCurrentState() {
   pub_state.publish(&js_msg);
 }
 
+
+/*
+ *
+ * Init / Setup()
+ *
+ */
+
 void setup() {
   pinMode(0, OUTPUT);
   digitalWrite(0, HIGH);
 
+  // connect to dynamixel servos
   dxlInit(1000000);
 
+  // configure serial connection to 1 Mbps
   ArduinoHardware* nh_hw = nh.getHardware();
   nh_hw->setBaud(1000000);
+  
   nh.initNode();
+ 
   nh.advertise(pub_state);
   nh.subscribe(sub_cmd);
+  
+  // wait for node to connect
+  while (!nh.connected()) {
+    nh.spinOnce();
+  }
+  
+  if (!nh.getParam("~debug", &DEBUG, 1)) {
+    DEBUG = 0;
+  }
 }
+
+
+/*
+ *
+ * Main
+ *
+ */
 
 void loop() {
   // periodically publish state
